@@ -1,0 +1,26 @@
+<app-header name="Лабораторна робота №1 Завдання 2"></app-header>
+
+<ion-content [fullscreen]="true">
+  <div class="content-wrapper">
+    <ion-item>
+      <ion-label position="floating">Число a</ion-label>
+      <ion-input [(ngModel)]="a" type="number"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="floating">Число b</ion-label>
+      <ion-input [(ngModel)]="b" type="number"></ion-input>
+    </ion-item>
+
+    <ion-button expand="full" (click)="calculate()">Обчислити суму</ion-button>
+
+    <ion-card *ngIf="result !== null">
+      <ion-card-header>
+        <ion-card-title>Результат</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        Сума чисел: {{ result }}
+      </ion-card-content>
+    </ion-card>
+  </div>
+</ion-content>

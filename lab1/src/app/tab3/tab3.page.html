@@ -1,0 +1,32 @@
+<app-header name="Лабораторна робота №1 Завдання 3"></app-header>
+
+<ion-content [fullscreen]="true">
+  <div class="content-wrapper">
+    <ion-item>
+      <ion-label position="floating">Розмір матриці N</ion-label>
+      <ion-input [(ngModel)]="matrixSize" type="number" min="1"></ion-input>
+    </ion-item>
+
+    <ion-button expand="full" (click)="generateMatrix()">Згенерувати матрицю</ion-button>
+
+    <div *ngIf="matrix.length">
+      <table style="width: 100%; margin-top: 20px; border-collapse: collapse;">
+        <tr *ngFor="let row of matrix; let rowIndex = index">
+          <td *ngFor="let cell of row; let colIndex = index" [ngStyle]="getCellStyle(rowIndex, colIndex)">
+            {{ cell }}
+          </td>
+        </tr>
+      </table>
+    </div>
+
+    <ion-card *ngIf="result !== null">
+      <ion-card-header>
+        <ion-card-title>Результат</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        Максимальне значення за модулем: {{ result.max }} <br>
+        Мінімальне значення за модулем: {{ result.min }}
+      </ion-card-content>
+    </ion-card>
+  </div>
+</ion-content>
