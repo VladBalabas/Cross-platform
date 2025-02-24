@@ -19,8 +19,10 @@ export class Tab3Page {
   generateMatrix() {
     if (this.matrixSize && this.matrixSize > 0) {
       this.matrix = [];
-      let max = -Infinity;
-      let min = Infinity;
+      
+      const firstValue = this.getRandomInt(-100, 100);
+      let max = firstValue;
+      let min = firstValue;
 
       for (let i = 0; i < this.matrixSize; i++) {
         const row = [];
@@ -28,22 +30,15 @@ export class Tab3Page {
           const randomValue = this.getRandomInt(-100, 100);
           row.push(randomValue);
 
-          if (randomValue > max) {
+          if (Math.abs(randomValue) > Math.abs(max)) {
             max = randomValue;
           }
-          if (randomValue < min) {
+          if (Math.abs(randomValue) < Math.abs(min)) {
             min = randomValue;
           }
         }
         this.matrix.push(row);
       }
-
-      for (let i = 0; i < this.matrixSize; i++) {
-        if (this.matrix[i][i] % 2 !== 0) {
-          this.matrix[i][i] = 0;
-        }
-      }
-
       this.result = { max, min };
     }
   }

@@ -1,0 +1,26 @@
+<app-header name="Лабораторна робота №2"></app-header>
+
+<ion-content>
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Каталог книг</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-list *ngFor="let genre of getGenres()">
+    <ion-item-divider color="light">
+      <ion-label>
+        <h2>{{ genre }}</h2>
+      </ion-label>
+    </ion-item-divider>
+
+    <ion-item *ngFor="let book of booksByGenre[genre]">
+      <ion-label>
+        <h3>{{ book.title }}</h3>
+        <p>{{ book.author }} - {{ book.year }} ({{ book.pages }} стор.)</p>
+      </ion-label>
+    </ion-item>
+  </ion-list>
+
+  <canvas #bookChart></canvas>
+</ion-content>

@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { IonContent, IonItem, IonLabel, IonInput, IonButton, IonCard, IonCardHeader, IonCardTitle, IonCardContent } from '@ionic/angular/standalone';
+import { IonContent, IonLabel, IonInput, IonButton, IonCard, IonCardHeader, IonCardTitle, IonCardContent, IonItem } from '@ionic/angular/standalone';
 import { HeaderComponent } from "../header/header.component";
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -9,7 +9,7 @@ import { CommonModule } from '@angular/common';
   templateUrl: 'tab2.page.html',
   styleUrls: ['tab2.page.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule, IonContent, IonLabel, IonInput, IonButton, IonCard, IonCardHeader, IonCardTitle, IonCardContent, HeaderComponent, IonItem],
+  imports: [IonItem, CommonModule, FormsModule, IonContent, IonLabel, IonInput, IonButton, IonCard, IonCardHeader, IonCardTitle, IonCardContent, HeaderComponent],
 })
 export class Tab2Page {
   a: number = 0;
@@ -29,7 +29,7 @@ export class Tab2Page {
     let sum = 0;
 
     for (let num = this.a; num <= this.b; num++) {
-      if (num % 12 === 0 && num % 8 === 5 && this.sumOfDigits(num) % 2 === 0) {
+      if (num % 12 === 0 && num % 8 === 4 && this.sumOfDigits(num) % 2 === 0) {
         sum += num;
       }
     }
