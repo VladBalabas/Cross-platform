@@ -43,7 +43,7 @@ export class Lab3AbstractPage implements OnInit {
   setBorderColors() {
     this.animals = this.animals.map(animal => ({
       ...animal,
-      borderColor: animal.speed > this.averageSpeed ? 'green' : 'red'
+      borderColor: animal.speed >= this.averageSpeed ? 'green' : 'red'
     }));
   }
 
