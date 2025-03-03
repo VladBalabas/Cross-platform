@@ -1,0 +1,25 @@
+<app-header name="Лабораторна робота №3"></app-header>
+
+<ion-content>
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Середня швидкість</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <p>{{ averageSpeed.toFixed(2) }} км/год</p>
+    </ion-card-content>
+  </ion-card>
+  <ion-list>
+    <ion-card *ngFor="let animal of animals" [ngStyle]="{'border-color': animal.borderColor}">
+      <ion-card-header>
+        <ion-card-title>{{ animal.name }} ({{ animal.type === 'Dog' ? 'Собака' : 'Кіт' }})</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <p>Вік: {{ animal.age }} років</p>
+        <p>Швидкість: {{ animal.speed }} км/год</p>
+        <p *ngIf="animal.breed">Порода: {{ animal.breed }}</p>
+        <p *ngIf="animal.furColor">Колір шерсті: {{ animal.furColor }}</p>
+      </ion-card-content>
+    </ion-card>
+  </ion-list>
+</ion-content>
