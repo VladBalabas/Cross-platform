@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonContent, IonList, IonCardHeader, IonCardTitle, IonCardContent, IonCard } from '@ionic/angular/standalone';
 import { HeaderComponent } from "../header/header.component";
+import { AnimalFactory, AnimalName } from "../classes/lab3/animal_factory";
 
 @Component({
   selector: 'app-lab3-abstract',
@@ -12,7 +13,7 @@ import { HeaderComponent } from "../header/header.component";
   imports: [IonCard, IonCardContent, IonCardTitle, IonCardHeader, IonList, IonContent, CommonModule, FormsModule, HeaderComponent]
 })
 export class Lab3AbstractPage implements OnInit {
-
+  
   jsonBinUrl = 'https://api.jsonbin.io/v3/b/67c38321acd3cb34a8f34802/latest';
   jsonBinKey = '$2a$10$tj9Q4CJKqIET6uDVWn/Kj.4AKzFkEh5VJp4vdA5SArauFVIcKis0a';
 
@@ -27,11 +28,15 @@ export class Lab3AbstractPage implements OnInit {
         headers: { 'X-Master-Key': this.jsonBinKey }
       });
       const data = await response.json();
-      this.animals = data.record;
+      
+      this.animals = data.record.map((animal: { type: AnimalName; name: string; age: number; speed: number; optional: string }) =>
+        AnimalFactory.getAnimal(animal.type, animal.name, animal.age, animal.speed, animal.optional)
+      );
+
       this.calculateAverageSpeed();
       this.setBorderColors();
     } catch (error) {
-      console.error('Ошибка загрузки данных:', error);
+      console.error('Downloading error:', error);
     }
   }
 
