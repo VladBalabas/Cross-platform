@@ -23,7 +23,7 @@ describe('Dog Class', () => {
     });
   
     it('should return correct display info', () => {
-      // expect(dog.displayInfo()).toContain('Назва: Rex');
+      expect(dog.displayInfo()).toContain('Назва: ${this.name}, Вік: ${this.age}, Швидкість: ${this.speed} км/год');
       expect(dog.displayInfo()).toContain('Порода: Labrador');
     });
   });
