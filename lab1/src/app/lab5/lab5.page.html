@@ -1,0 +1,29 @@
+<app-header name="Лабораторна робота №5 "></app-header>
+
+<ion-content>
+  <div class="results-container">
+    <table>
+      <thead>
+        <tr>
+          <th>x</th>
+          <th>Табуляція</th>
+          <th>Розклад у ряд</th>
+          <th>Рекурсія</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let result of displayedResults">
+          <td>{{ result.x.toFixed(2) }}</td>
+          <td>{{ result.tabulated.toFixed(5) }}</td>
+          <td>{{ result.series.toFixed(5) }}</td>
+          <td>{{ result.recursion.toFixed(5) }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="chart-container">
+    <h3>Графік ln(1 + x) для різних методів</h3>
+    <canvas #chartCanvas></canvas>
+  </div>
+</ion-content>
