@@ -1,0 +1,47 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Продукти</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+
+<ion-card *ngFor="let product of products">
+  <ion-card-header>
+    <ion-card-title>{{ product.name }}</ion-card-title>
+    
+  </ion-card-header>
+
+  <ion-card-content>
+
+    <ion-row class="ion-justify-content-between ion-align-items-center">
+      <ion-card-subtitle>{{ product.getInfo() }}</ion-card-subtitle>
+      <ion-col size="auto" class="ion-text-right">
+        <ion-button class="edit-button" (click)="onEdit(product)" style="margin-right: 16px;">
+          ✏️
+        </ion-button>
+        <ion-button class="delete-button" color="danger" (click)="onDelete(product)">
+          ❌
+        </ion-button>
+      </ion-col>
+    </ion-row>
+
+    <form *ngIf="selectedProductId === product.id" [formGroup]="productForm" (ngSubmit)="onSubmit()">
+      <ng-container *ngIf="selectedType">
+        <div *ngIf="selectedType === 'boardGame'">
+          <app-board-game-form [formGroup]="productForm"></app-board-game-form>
+        </div>
+        <div *ngIf="selectedType === 'stuffedToy'">
+          <app-stuffed-toy-form [formGroup]="productForm"></app-stuffed-toy-form>
+        </div>
+        <div *ngIf="selectedType === 'creativeKit'">
+          <app-creative-kit-form [formGroup]="productForm"></app-creative-kit-form>
+        </div>
+        <div *ngIf="selectedType === 'universal'">
+          <app-universal-form [formGroup]="productForm"></app-universal-form>
+        </div>
+      </ng-container>
+
+      <ion-button expand="full" type="submit" [disabled]="!productForm.valid">Зберегти зміни</ion-button>
+    </form>
+  </ion-card-content>
+</ion-card>

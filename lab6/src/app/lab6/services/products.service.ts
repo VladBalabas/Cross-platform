@@ -23,8 +23,6 @@ export class ProductsService {
         }
       });
 
-      if (!response.ok) throw new Error(`Помилка HTTP: ${response.status}`);
-
       const data = await response.json();
       this.products = (data.record?.products || []).map((productData: any) => 
         this.productFactory.createProduct(productData)

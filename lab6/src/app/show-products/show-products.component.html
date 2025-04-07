@@ -1,0 +1,8 @@
+<ion-list>
+  <ion-item *ngFor="let product of products">
+    <ion-label>
+      <h2>{{ product.getName() }}</h2>
+      <p>{{ product.getInfo() }}</p>
+    </ion-label>
+  </ion-item>
+</ion-list>

@@ -1,10 +1,21 @@
-<ion-content>
-    <ion-list>
-      <ion-item *ngFor="let product of products">
-        <ion-label>
-          <h2>{{ product.getName() }}</h2>
-          <p>{{ product.getInfo() }}</p>
-        </ion-label>
-      </ion-item>
-    </ion-list>
-  </ion-content>
+<ion-content class="ion-padding">
+  <ion-segment [(ngModel)]="selectedSegment" color="tertiary">
+    <ion-segment-button value="show">
+      <ion-label>Переглянути</ion-label>
+    </ion-segment-button>
+    <ion-segment-button value="create">
+      <ion-label>Додати</ion-label>
+    </ion-segment-button>
+    <ion-segment-button value="edit">
+      <ion-label>Редагувати</ion-label>
+    </ion-segment-button>
+  </ion-segment>
+
+  <div class="segment-content">
+    <ng-container [ngSwitch]="selectedSegment">
+      <app-show-products *ngSwitchCase="'show'" [products]="products"></app-show-products>
+      <app-create-products *ngSwitchCase="'create'" [products]="products"></app-create-products>
+      <app-edit-products *ngSwitchCase="'edit'" [products]="products"></app-edit-products>
+    </ng-container>
+  </div>
+</ion-content>

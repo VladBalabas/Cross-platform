@@ -1,0 +1,27 @@
+<div [formGroup]="formGroup">
+
+  <ion-item>
+    <ion-label position="stacked">Назва</ion-label>
+    <ion-input formControlName="name" placeholder="Назва іграшки"></ion-input>
+  </ion-item>
+  
+  <ion-item>
+    <ion-label position="stacked">Ціна</ion-label>
+    <ion-input formControlName="price" type="number" placeholder="Ціна"></ion-input>
+  </ion-item>
+  
+  <ion-item>
+    <ion-label position="stacked">Опис</ion-label>
+    <ion-textarea formControlName="description" placeholder="Опис іграшки"></ion-textarea>
+  </ion-item>
+  
+  <ion-item>
+    <ion-label position="stacked">Вік (діапазон)</ion-label>
+    <ion-input formControlName="ageRange" placeholder="Вік користувача"></ion-input>
+  </ion-item>
+  
+  <ion-item>
+    <ion-label position="stacked">Особливості</ion-label>
+    <ion-input formControlName="features" placeholder="Особливості іграшки"></ion-input>
+  </ion-item>
+</div>

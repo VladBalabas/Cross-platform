@@ -1,0 +1,26 @@
+<div [formGroup]="formGroup">
+  <ion-item>
+    <ion-label position="stacked">Назва</ion-label>
+    <ion-input formControlName="name" placeholder="Назва гри"></ion-input>
+  </ion-item>
+
+  <ion-item>
+    <ion-label position="stacked">Ціна</ion-label>
+    <ion-input formControlName="price" type="number" placeholder="Ціна"></ion-input>
+  </ion-item>
+
+  <ion-item>
+    <ion-label position="stacked">Опис</ion-label>
+    <ion-textarea formControlName="description" placeholder="Опис гри"></ion-textarea>
+  </ion-item>
+
+  <ion-item>
+    <ion-label position="stacked">Кількість гравців</ion-label>
+    <ion-input formControlName="playersCount" type="number" placeholder="Кількість гравців"></ion-input>
+  </ion-item>
+
+  <ion-item>
+    <ion-label position="stacked">Тривалість (хв.)</ion-label>
+    <ion-input formControlName="duration" type="number" placeholder="Тривалість гри"></ion-input>
+  </ion-item>
+</div>

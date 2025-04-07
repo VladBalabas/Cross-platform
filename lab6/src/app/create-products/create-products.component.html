@@ -1,0 +1,41 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Створити продукт</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+
+<ion-item>
+  <ion-label>Тип продукту</ion-label>
+  <ion-select [(ngModel)]="selectedType" (ionChange)="onTypeChange()">
+    <ion-select-option value="boardGame">Настільна гра</ion-select-option>
+    <ion-select-option value="stuffedToy">Плюшева іграшка</ion-select-option>
+    <ion-select-option value="creativeKit">Набір для творчості</ion-select-option>
+    <ion-select-option value="universal">Універсальна іграшка</ion-select-option>
+  </ion-select>
+</ion-item>
+
+<form [formGroup]="productForm" (ngSubmit)="onSubmit()">
+  <ng-container *ngIf="selectedType">
+    <div *ngIf="selectedType === 'boardGame'">
+      <app-board-game-form [formGroup]="productForm"></app-board-game-form>
+    </div>
+    <div *ngIf="selectedType === 'stuffedToy'">
+      <app-stuffed-toy-form [formGroup]="productForm"></app-stuffed-toy-form>
+    </div>
+    <div *ngIf="selectedType === 'creativeKit'">
+      <app-creative-kit-form [formGroup]="productForm"></app-creative-kit-form>
+    </div>
+    <div *ngIf="selectedType === 'universal'">
+      <app-universal-form [formGroup]="productForm"></app-universal-form>
+    </div>
+  </ng-container>
+
+  <ion-button expand="full" type="submit" [disabled]="!productForm.valid">Додати продукт</ion-button>
+</form>
+
+<ion-list>
+  <ion-item *ngFor="let product of products">
+    <ion-label>{{ product.name }} - {{ product.price }} грн</ion-label>
+  </ion-item>
+</ion-list>
