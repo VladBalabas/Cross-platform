@@ -1,0 +1,34 @@
+<ion-card class="results-card">
+  <ion-card-header>
+    <ion-card-title class="results-title">Результати</ion-card-title>
+    <ion-card-subtitle>Статистика за курсами</ion-card-subtitle>
+  </ion-card-header>
+
+  <ion-card-content>
+    <ion-list lines="full" class="results-list">
+      <ion-item-group>
+        <ion-item-divider sticky>
+          <ion-label>Детальна інформація</ion-label>
+        </ion-item-divider>
+
+        <ion-item *ngFor="let course of studentsData; let i = index" class="result-item">
+          <ion-label slot="start" class="course-number">
+            <ion-badge color="primary">{{i + 1}}</ion-badge>
+          </ion-label>
+
+          <ion-label class="groups-label">
+            <h3>Групи</h3>
+            <p>{{course.join(', ')}}</p>
+          </ion-label>
+
+          <ion-label slot="end" class="total-label">
+            <h3>Студентів</h3>
+            <ion-chip color="success">
+              <ion-label>{{totals[i]}}</ion-label>
+            </ion-chip>
+          </ion-label>
+        </ion-item>
+      </ion-item-group>
+    </ion-list>
+  </ion-card-content>
+</ion-card>

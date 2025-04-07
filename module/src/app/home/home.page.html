@@ -1,0 +1,19 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Облік студентів за курсами</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <div class="home-container">
+    <app-student-form 
+      [coursesCount]="4"
+      (dataSubmitted)="onDataSubmitted($event)">
+    </app-student-form>
+    
+    <app-results 
+      [studentsData]="studentsData"
+      [totals]="totals">
+    </app-results>
+  </div>
+</ion-content>

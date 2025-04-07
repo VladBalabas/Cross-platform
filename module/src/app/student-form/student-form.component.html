@@ -1,0 +1,49 @@
+<form [formGroup]="form" (ngSubmit)="onGroupsSubmit()" *ngIf="studentsFormArray.length === 0">
+  <ion-list>
+    <ion-item>
+      <ion-label class="form-title">Введіть кількість груп для кожного курсу</ion-label>
+    </ion-item>
+
+    <div formArrayName="groups">
+      <div *ngFor="let control of groupsFormArray.controls; let i = index">
+        <ion-item>
+          <ion-label position="stacked">Курс {{i+1}}:</ion-label>
+          <ion-input type="number" [formControlName]="i"></ion-input>
+        </ion-item>
+      </div>
+    </div>
+  </ion-list>
+
+  <ion-button type="submit" expand="block" [disabled]="!isGroupsFormValid()">
+    Продовжити
+  </ion-button>
+</form>
+
+<form [formGroup]="form" (ngSubmit)="onSubmit()" *ngIf="studentsFormArray.length > 0">
+  <ion-list>
+    <ion-item>
+      <ion-label class="form-title">Введіть кількість студентів у кожній групі</ion-label>
+    </ion-item>
+
+    <div formArrayName="students">
+      <div *ngFor="let course of studentsFormArray.controls; let courseIndex = index">
+        <ion-item-divider>
+          <ion-label>Курс {{courseIndex + 1}}</ion-label>
+        </ion-item-divider>
+
+        <div [formArrayName]="courseIndex">
+          <div *ngFor="let group of getCourseGroups(courseIndex).controls; let groupIndex = index">
+            <ion-item>
+              <ion-label position="stacked">Група {{groupIndex + 1}}:</ion-label>
+              <ion-input type="number" [formControlName]="groupIndex"></ion-input>
+            </ion-item>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ion-list>
+
+  <ion-button type="submit" expand="block" [disabled]="!isStudentsFormValid()">
+    Розрахувати
+  </ion-button>
+</form>
