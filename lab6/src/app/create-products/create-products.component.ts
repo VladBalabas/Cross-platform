@@ -42,6 +42,7 @@ export class CreateProductsComponent implements OnInit {
 
   onSubmit() {
     if (this.productForm.valid) {
+      console.log(this.productForm.value);
       const productData = {
         ...this.productForm.value,
         id: this.products.length + 1,

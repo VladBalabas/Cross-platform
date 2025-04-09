@@ -1,120 +1,137 @@
+import { TestBed } from '@angular/core/testing';
+import { AbstractControl, FormControl } from '@angular/forms';
 import { ProductFeaturesValidatorService } from './product-features-validator.service';
 
 describe('ProductFeaturesValidatorService', () => {
   let service: ProductFeaturesValidatorService;
+  let control: AbstractControl;
 
   beforeEach(() => {
-    service = new ProductFeaturesValidatorService();
+    TestBed.configureTestingModule({});
+    service = TestBed.inject(ProductFeaturesValidatorService);
+    control = new FormControl('');
+  });
+
+  describe('parseFeatures', () => {
+    it('should return empty array for null value', () => {
+      control.setValue(null);
+      expect(service['parseFeatures'](control)).toEqual([]);
+    });
+
+    it('should return empty array for empty string', () => {
+      control.setValue('');
+      expect(service['parseFeatures'](control)).toEqual([]);
+    });
+
+    it('should return array of features', () => {
+      control.setValue('feature1, feature2, feature3');
+      expect(service['parseFeatures'](control)).toEqual(['feature1', 'feature2', 'feature3']);
+    });
+
+    it('should trim whitespace from features', () => {
+      control.setValue('  feature1 , feature2  ,  feature3  ');
+      expect(service['parseFeatures'](control)).toEqual(['feature1', 'feature2', 'feature3']);
+    });
+
+    it('should filter out empty features', () => {
+      control.setValue('feature1,,feature2, ,feature3');
+      expect(service['parseFeatures'](control)).toEqual(['feature1', 'feature2', 'feature3']);
+    });
   });
 
   describe('validateMinimumFeatures', () => {
-    it('should return invalidFeaturesArray for non-array values', () => {
+    it('should return null when enough features are provided', () => {
       const validator = service.validateMinimumFeatures(3);
-      expect(validator({ value: null } as any)).toEqual({ invalidFeaturesArray: true });
-      expect(validator({ value: undefined } as any)).toEqual({ invalidFeaturesArray: true });
-      expect(validator({ value: 'not an array' } as any)).toEqual({ invalidFeaturesArray: true });
-      expect(validator({ value: 123 } as any)).toEqual({ invalidFeaturesArray: true });
-      expect(validator({ value: {} } as any)).toEqual({ invalidFeaturesArray: true });
+      control.setValue('feature1, feature2, feature3');
+      expect(validator(control)).toBeNull();
     });
 
-    it('should return null when array meets minimum features requirement', () => {
-      const validator = service.validateMinimumFeatures(2);
-      expect(validator({ value: ['a', 'b'] } as any)).toBeNull();
-      expect(validator({ value: ['a', 'b', 'c'] } as any)).toBeNull();
-    });
-
-    it('should return error when array has fewer features than required', () => {
+    it('should return error when not enough features are provided', () => {
       const validator = service.validateMinimumFeatures(3);
-      expect(validator({ value: [] } as any)).toEqual({
-        minimumFeaturesRequired: { required: 3, actual: 0 }
-      });
-      expect(validator({ value: ['a'] } as any)).toEqual({
-        minimumFeaturesRequired: { required: 3, actual: 1 }
-      });
-      expect(validator({ value: ['a', 'b'] } as any)).toEqual({
-        minimumFeaturesRequired: { required: 3, actual: 2 }
+      control.setValue('feature1, feature2');
+      const result = validator(control);
+      expect(result).toEqual({
+        minimumFeatures: {
+          required: 3,
+          actual: 2
+        }
       });
     });
 
-    it('should work with different minimum requirements', () => {
-      const validator1 = service.validateMinimumFeatures(1);
-      expect(validator1({ value: [] } as any)).not.toBeNull();
-      expect(validator1({ value: ['a'] } as any)).toBeNull();
-
-      const validator0 = service.validateMinimumFeatures(0);
-      expect(validator0({ value: [] } as any)).toBeNull();
+    it('should handle empty input', () => {
+      const validator = service.validateMinimumFeatures(1);
+      control.setValue('');
+      const result = validator(control);
+      expect(result).toEqual({
+        minimumFeatures: {
+          required: 1,
+          actual: 0
+        }
+      });
     });
   });
 
   describe('validateUniqueFeatures', () => {
-    it('should return null for non-array values', () => {
-      const validator = service.validateUniqueFeatures();
-      expect(validator({ value: null } as any)).toBeNull();
-      expect(validator({ value: undefined } as any)).toBeNull();
-      expect(validator({ value: 'not an array' } as any)).toBeNull();
-    });
-
-    it('should return null for empty array', () => {
-      const validator = service.validateUniqueFeatures();
-      expect(validator({ value: [] } as any)).toBeNull();
-    });
-
     it('should return null when all features are unique', () => {
       const validator = service.validateUniqueFeatures();
-      expect(validator({ value: ['a', 'b', 'c'] } as any)).toBeNull();
-      expect(validator({ value: ['Feature 1', 'Feature 2'] } as any)).toBeNull();
+      control.setValue('feature1, feature2, feature3');
+      expect(validator(control)).toBeNull();
     });
 
-    it('should detect case-insensitive duplicates', () => {
+    it('should return error when duplicate features exist', () => {
       const validator = service.validateUniqueFeatures();
-      expect(validator({ value: ['a', 'A'] } as any)).toEqual({ duplicateFeatures: true });
-      expect(validator({ value: ['Feature', 'feature'] } as any)).toEqual({ duplicateFeatures: true });
+      control.setValue('feature1, feature2, feature1');
+      expect(validator(control)).toEqual({ duplicateFeatures: true });
     });
 
-    it('should detect multiple duplicates', () => {
+    it('should be case insensitive', () => {
       const validator = service.validateUniqueFeatures();
-      expect(validator({ value: ['a', 'b', 'a', 'c', 'b'] } as any)).toEqual({ duplicateFeatures: true });
+      control.setValue('feature1, Feature1, FEATURE1');
+      expect(validator(control)).toEqual({ duplicateFeatures: true });
+    });
+
+    it('should handle empty input', () => {
+      const validator = service.validateUniqueFeatures();
+      control.setValue('');
+      expect(validator(control)).toBeNull();
     });
   });
 
   describe('validateFeatureLength', () => {
-    it('should return null for non-array values', () => {
+    it('should return null when all features are within length limit', () => {
       const validator = service.validateFeatureLength(10);
-      expect(validator({ value: null } as any)).toBeNull();
-      expect(validator({ value: undefined } as any)).toBeNull();
-      expect(validator({ value: 'not an array' } as any)).toBeNull();
+      control.setValue('short, medium, length');
+      expect(validator(control)).toBeNull();
     });
 
-    it('should return null when all features meet length requirement', () => {
+    it('should return error when any feature exceeds length limit', () => {
       const validator = service.validateFeatureLength(5);
-      expect(validator({ value: ['a', 'ab', 'abc'] } as any)).toBeNull();
-      expect(validator({ value: ['12345'] } as any)).toBeNull();
-      expect(validator({ value: [] } as any)).toBeNull();
-    });
-
-    it('should detect features that are too long', () => {
-      const validator = service.validateFeatureLength(3);
-      expect(validator({ value: ['abcd'] } as any)).toEqual({
-        featureTooLong: { maxLength: 3, invalidFeatures: ['abcd'] }
-      });
-      expect(validator({ value: ['a', 'abc', 'abcd'] } as any)).toEqual({
-        featureTooLong: { maxLength: 3, invalidFeatures: ['abcd'] }
-      });
-      expect(validator({ value: ['a', 'abcde', 'abcdef'] } as any)).toEqual({
-        featureTooLong: { maxLength: 3, invalidFeatures: ['abcde', 'abcdef'] }
+      control.setValue('short, medium, long');
+      const result = validator(control);
+      expect(result).toEqual({
+        featureTooLong: {
+          maxLength: 5,
+          invalidFeatures: ['medium']
+        }
       });
     });
 
-    it('should work with different length limits', () => {
-      const validator10 = service.validateFeatureLength(10);
-      expect(validator10({ value: ['1234567890'] } as any)).toBeNull();
-      expect(validator10({ value: ['12345678901'] } as any)).not.toBeNull();
-
-      const validator0 = service.validateFeatureLength(0);
-      expect(validator0({ value: [''] } as any)).toBeNull();
-      expect(validator0({ value: ['a'] } as any)).toEqual({
-        featureTooLong: { maxLength: 0, invalidFeatures: ['a'] }
+    it('should return multiple invalid features', () => {
+      const validator = service.validateFeatureLength(5);
+      control.setValue('short, medium, verylong');
+      const result = validator(control);
+      expect(result).toEqual({
+        featureTooLong: {
+          maxLength: 5,
+          invalidFeatures: ['medium', 'verylong']
+        }
       });
+    });
+
+    it('should handle empty input', () => {
+      const validator = service.validateFeatureLength(10);
+      control.setValue('');
+      expect(validator(control)).toBeNull();
     });
   });
 });

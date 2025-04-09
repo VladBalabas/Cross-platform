@@ -13,7 +13,7 @@ export class Universal extends Toy {
   }
 
   getInfo(): string {
-    return `${this.getName()} - ${this.getPrice()} грн. Підходить для віку: ${this.ageRange}. Особливості: ${this.features.join(', ')}.`;
+    return `${this.getName()} - ${this.getPrice()} грн. Підходить для віку: ${this.ageRange}. Особливості: ${this.features}.`;
   }
 
   getAgeRange(): string {

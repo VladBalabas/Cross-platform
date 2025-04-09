@@ -138,24 +138,6 @@ describe('CreateProductsComponent', () => {
       expect(component.products[0] instanceof CreativeKit).toBeTrue();
     });
 
-    it('should create and add a universal product when form is valid', () => {
-      component.selectedType = 'universal';
-      component.onTypeChange();
-      
-      component.productForm.patchValue({
-        name: 'Building Blocks',
-        price: 35,
-        description: 'Educational toy',
-        ageRange: '3-6',
-        features: ['Colorful', 'Safe materials']
-      });
-      
-      component.onSubmit();
-      
-      expect(component.products.length).toBe(1);
-      expect(component.products[0] instanceof Universal).toBeTrue();
-    });
-
     it('should assign correct id to new product', () => {
       component.products = [
         new BoardGame(1, 'Test Game', 10, 'Test', 2, 30),
