@@ -8,17 +8,27 @@ import { Universal } from '../toys/universal';
 @Injectable({ providedIn: 'root' })
 export class ProductFactoryService {
   createProduct(data: any): Toy {
+    let product: Toy;
+
     switch (data.type) {
       case 'boardGame':
-        return new BoardGame(data.id, data.name, data.price, data.description, data.playersCount, data.duration);
+        product = new BoardGame(data.id, data.name, data.price, data.description, data.playersCount, data.duration);
+        break;
       case 'stuffedToy':
-        return new StuffedToy(data.id, data.name, data.price, data.description, data.material, data.height);
+        product = new StuffedToy(data.id, data.name, data.price, data.description, data.material, data.height);
+        break;
       case 'creativeKit':
-        return new CreativeKit(data.id, data.name, data.price, data.description, data.kitType, data.componentsCount, data.difficultyLevel);
+        product = new CreativeKit(data.id, data.name, data.price, data.description, data.kitType, data.componentsCount, data.difficultyLevel);
+        break;
       case 'universal':
-          return new Universal(data.id, data.name, data.price, data.description, data.ageRange, data.features);
+        product = new Universal(data.id, data.name, data.price, data.description, data.ageRange, data.features);
+          break;
         default:
         throw new Error('Unknown product type');
     }
+
+    (product as any).type = data.type;
+
+    return product;
   }
 }

@@ -1,0 +1,40 @@
+.filter-container {
+    padding: 10px;
+    margin-bottom: 15px;
+    border-radius: 8px;
+  }
+  
+  .horizontal-checkboxes {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    background: transparent;
+    
+    
+    ion-item {
+      --background: transparent;
+      --padding-start: 0;
+      margin-right: 15px;
+      width: 17vw;
+    }
+  }
+  
+  .price-filter {
+    margin-top: 10px;
+    
+    ion-item {
+      --background: transparent;
+    }
+  }
+  
+  .price {
+    color: #2dd36f;
+    font-weight: bold;
+  }
+  
+  .no-results {
+    text-align: center;
+    padding: 20px;
+    color: #666;
+    font-style: italic;
+  }

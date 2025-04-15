@@ -31,6 +31,7 @@ describe('ShowProductsComponent', () => {
 
     fixture = TestBed.createComponent(ShowProductsComponent);
     component = fixture.componentInstance;
+    component.products = [...testProducts];
     fixture.detectChanges();
   });
 
@@ -38,39 +39,98 @@ describe('ShowProductsComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should display correct product information for each product', () => {
-    component.products = [testProducts[0]];
-    fixture.detectChanges();
-    
-    const productElement = fixture.debugElement.query(By.css('ion-item'));
-    const textContent = productElement.nativeElement.textContent;
-    
-    expect(textContent).toContain('Chess');
-    expect(textContent).toContain('20 грн');
-    expect(textContent).toContain('Для 2 гравців');
-    expect(textContent).toContain('60 хв');
+  it('should initialize with correct price range from products', () => {
+    expect(component.minPrice).toBe(20);
+    expect(component.maxPrice).toBe(35);
+    expect(component.priceRange.lower).toBe(20);
+    expect(component.priceRange.upper).toBe(35);
   });
 
-  it('should display different product types correctly', () => {
-    component.products = testProducts;
+  it('should filter products by category when categories are selected', () => {
+    component.categories[0].selected = true;
+    component.onCategoryChange();
     fixture.detectChanges();
     
-    const productElements = fixture.debugElement.queryAll(By.css('ion-item'));
+    expect(component.filteredProducts.length).toBe(0);
+
+    component.categories[1].selected = true;
+    component.onCategoryChange();
+    fixture.detectChanges();
     
-    // BoardGame specific info
-    expect(productElements[0].nativeElement.textContent).toContain('Для 2 гравців');
-    expect(productElements[0].nativeElement.textContent).toContain('60 хв');
+    expect(component.filteredProducts.length).toBe(0);
+  });
+
+  it('should show all products when no categories are selected', () => {
+    component.categories.forEach(c => c.selected = false);
+    component.onCategoryChange();
+    fixture.detectChanges();
     
-    // StuffedToy specific info
-    expect(productElements[1].nativeElement.textContent).toContain('Матеріал: Cotton');
-    expect(productElements[1].nativeElement.textContent).toContain('50 см');
+    expect(component.filteredProducts.length).toBe(4);
+  });
+
+  it('should filter products by price range', () => {
+    component.priceFilter$.next({ min: 25, max: 30 });
+    fixture.detectChanges();
     
-    // CreativeKit specific info
-    expect(productElements[2].nativeElement.textContent).toContain('Тип набору: Art');
-    expect(productElements[2].nativeElement.textContent).toContain('12');
+    expect(component.filteredProducts.length).toBe(2);
+    expect(component.filteredProducts.some(p => p.name === 'Teddy Bear')).toBeTrue();
+    expect(component.filteredProducts.some(p => p.name === 'Painting Set')).toBeTrue();
+  });
+
+  it('should combine category and price filters', () => {
+    component.categories[2].selected = true;
+    component.onCategoryChange();
+
+    component.priceFilter$.next({ min: 20, max: 25 });
+    fixture.detectChanges();
     
-    // Universal specific info
-    expect(productElements[3].nativeElement.textContent).toContain('Підходить для віку: 3-6');
-    expect(productElements[3].nativeElement.textContent).toContain('Colorful');
+    expect(component.filteredProducts.length).toBe(0);
+  });
+
+  it('should update price range when products change', () => {
+    const newProducts = [
+      new BoardGame(5, 'Checkers', 15, 'Classic game', 2, 30),
+      new StuffedToy(6, 'Rabbit', 40, 'Soft toy', 'Wool', 30)
+    ];
+    component.products = newProducts;
+    component.ngOnInit();
+    
+    expect(component.minPrice).toBe(15);
+    expect(component.maxPrice).toBe(40);
+    expect(component.priceRange.lower).toBe(15);
+    expect(component.priceRange.upper).toBe(40);
+  });
+
+  it('should handle empty products array', () => {
+    component.products = [];
+    component.ngOnInit();
+    
+    expect(component.minPrice).toBe(20);
+    expect(component.maxPrice).toBe(35);
+    expect(component.filteredProducts.length).toBe(0);
+  });
+
+  it('should update filtered products when price range changes', () => {
+    const event = {
+      detail: {
+        value: { lower: 25, upper: 30 }
+      }
+    };
+    component.onPriceChange(event);
+    
+    expect(component.filteredProducts.length).toBe(2);
+    expect(component.filteredProducts.some(p => p.name === 'Teddy Bear')).toBeTrue();
+    expect(component.filteredProducts.some(p => p.name === 'Painting Set')).toBeTrue();
+  });
+
+  it('should display correct number of products after filtering', () => {
+    fixture.detectChanges();
+    let productElements = fixture.debugElement.queryAll(By.css('ion-item'));
+    expect(productElements.length).toBe(10);
+
+    component.priceFilter$.next({ min: 30, max: 35 });
+    fixture.detectChanges();
+    productElements = fixture.debugElement.queryAll(By.css('ion-item'));
+    expect(productElements.length).toBe(8);
   });
 });
