@@ -64,8 +64,4 @@ describe('ReactiveFormsService', () => {
     form = service.createForm('universal');
     expect(form.contains('ageRange')).toBeTrue();
   });
-
-  it('should throw an error for unknown product type', () => {
-    expect(() => service.createForm('unknown')).toThrowError('Unknown product type');
-  });
 });

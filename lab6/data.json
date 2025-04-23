@@ -1,0 +1,77 @@
+{
+    "products": [
+      {
+        "type": "boardGame",
+        "id": 1,
+        "name": "Монополія",
+        "price": 599,
+        "description": "Класична настільна гра",
+        "playersCount": 4,
+        "duration": 90
+      },
+      {
+        "type": "stuffedToy",
+        "id": 2,
+        "name": "Ведмедик Тедді",
+        "price": 349,
+        "description": "М'яка іграшка",
+        "material": "Плюш",
+        "height": 30
+      },
+      {
+        "type": "creativeKit",
+        "id": 3,
+        "name": "Набір для вишивання",
+        "price": 259,
+        "description": "Повний набір для початкового вишивання",
+        "kitType": "Вишивання",
+        "componentsCount": 18,
+        "difficultyLevel": "початковий"
+      },
+      {
+        "type": "boardGame",
+        "id": 4,
+        "name": "Шахи",
+        "price": 450,
+        "description": "Класичні шахи з дерев'яними фігурами",
+        "playersCount": 2,
+        "duration": 60
+      },
+      {
+        "type": "creativeKit",
+        "id": 5,
+        "name": "Електронний конструктор",
+        "price": 899,
+        "description": "Складний конструктор для створення електронних пристроїв",
+        "kitType": "Електроніка",
+        "componentsCount": 45,
+        "difficultyLevel": "складний"
+      },
+      {
+        "type": "universal",
+        "id": 6,
+        "name": "Магічна коробка",
+        "price": 499,
+        "description": "Набір із сюрпризами для дітей різного віку",
+        "ageRange": "3-12 років",
+        "features": [
+          "Багаторазове використання",
+          "Різні ігри всередині",
+          "Підходить для всієї родини"
+        ]
+      },
+      {
+        "type": "universal",
+        "id": 7,
+        "name": "Інтерактивний набір",
+        "price": 749,
+        "description": "Іграшка з елементами доповненої реальності",
+        "ageRange": "6-14 років",
+        "features": [
+          "AR підтримка",
+          "Освітній контент",
+          "Мобільний додаток"
+        ]
+      }
+    ]
+  }

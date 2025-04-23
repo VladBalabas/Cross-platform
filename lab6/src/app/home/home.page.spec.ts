@@ -1,63 +1,110 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { IonicModule } from '@ionic/angular';
 import { HomePage } from './home.page';
 import { ProductsService } from '../lab6/services/products.service';
 import { ShowProductsComponent } from '../show-products/show-products.component';
 import { EditProductsComponent } from '../edit-products/edit-products.component';
 import { CreateProductsComponent } from '../create-products/create-products.component';
-import { ReactiveFormsModule } from '@angular/forms';
-import { IonicModule } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
-import { of } from 'rxjs';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Toy } from '../lab6/abstract/toy';
+import { of } from 'rxjs';
+import { BoardGame } from '../lab6/toys/board_game';
+import { CreativeKit } from '../lab6/toys/creative_kit';
+import { StuffedToy } from '../lab6/toys/stuffed_toy';
 
 describe('HomePage', () => {
   let component: HomePage;
   let fixture: ComponentFixture<HomePage>;
-  let productsService: ProductsService;
+  let productsServiceSpy: jasmine.SpyObj<ProductsService>;
 
-  beforeEach(() => {
-    // Мокаем ProductsService
-    const productsServiceMock = {
-      fetchProducts: jasmine.createSpy('fetchProducts').and.returnValue(Promise.resolve()),
-      products: [
-        { id: 1, name: 'Toy 1', price: 10 },
-        { id: 2, name: 'Toy 2', price: 15 }
-      ]
-    };
+  const mockProducts: Toy[] = [
+    new BoardGame(1, 'Chess', 15, 'Classic board game', 2, 60),
+    new StuffedToy(2, 'Teddy Bear', 25, 'Fluffy toy', 'Cotton', 30),
+    new CreativeKit(3, 'Painting Set', 30, 'Art kit', 'Art', 24, 'Medium')
+  ];
+  
+  const mockCategories: string[] = ['boardGame', 'stuffedToy', 'creativeKit', 'universal'];
 
-    TestBed.configureTestingModule({
+  beforeEach(async () => {
+    const spy = jasmine.createSpyObj('ProductsService', ['fetchProducts']);
+    
+    Object.defineProperty(spy, 'products', { 
+      get: jasmine.createSpy('products getter').and.returnValue(mockProducts) 
+    });
+    Object.defineProperty(spy, 'categories', { 
+      get: jasmine.createSpy('categories getter').and.returnValue(mockCategories) 
+    });
+    
+    spy.fetchProducts.and.returnValue(Promise.resolve());
+
+    await TestBed.configureTestingModule({
       imports: [
-        IonicModule,
+        IonicModule.forRoot(),
         CommonModule,
+        FormsModule,
         ReactiveFormsModule,
+        HomePage,
         ShowProductsComponent,
         EditProductsComponent,
-        CreateProductsComponent,
-        HomePage
+        CreateProductsComponent
       ],
-      providers: [{ provide: ProductsService, useValue: productsServiceMock }]
-    });
+      providers: [
+        { provide: ProductsService, useValue: spy }
+      ]
+    }).compileComponents();
 
+    productsServiceSpy = TestBed.inject(ProductsService) as jasmine.SpyObj<ProductsService>;
     fixture = TestBed.createComponent(HomePage);
     component = fixture.componentInstance;
-    productsService = TestBed.inject(ProductsService);
-
-    fixture.detectChanges();
   });
 
-  it('should create the HomePage component', () => {
+  it('should create', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should have initial segment set to "show"', () => {
+  it('should have "show" as default selected segment', () => {
     expect(component.selectedSegment).toBe('show');
   });
 
-  it('should fetch products on ngOnInit', async () => {
-    await component.ngOnInit();
-    expect(productsService.fetchProducts).toHaveBeenCalled();
-    expect(component.products.length).toBe(2);
-    expect(component.products[0].name).toBe('Toy 1');
+  it('should initialize with isLoading set to true', () => {
+    expect(component.isLoading).toBeTrue();
   });
 
+  it('should call fetchProducts on ngOnInit', fakeAsync(() => {
+    component.ngOnInit();
+    tick();
+    expect(productsServiceSpy.fetchProducts).toHaveBeenCalled();
+  }));
+
+  it('should load products and categories on ngOnInit', fakeAsync(() => {
+    component.ngOnInit();
+    tick();
+    
+    expect(component.products).toEqual(mockProducts);
+    expect(component.categories).toEqual(mockCategories);
+    expect(component.isLoading).toBeFalse();
+  }));
+
+  it('should format categories correctly', fakeAsync(() => {
+    component.ngOnInit();
+    tick();
+    
+    const expectedFormattedCategories = [
+      { type: 'boardGame', name: 'Board Games' },
+      { type: 'stuffedToy', name: 'Stuffed Toys' },
+      { type: 'creativeKit', name: 'Creative Kits' },
+      { type: 'universal', name: 'Universal Toys' }
+    ];
+    
+    expect(component.formattedCategories).toEqual(expectedFormattedCategories);
+  }));
+
+  it('should get correct display name for each type', () => {
+    expect(component['getDisplayName']('boardGame')).toBe('Board Games');
+    expect(component['getDisplayName']('stuffedToy')).toBe('Stuffed Toys');
+    expect(component['getDisplayName']('creativeKit')).toBe('Creative Kits');
+    expect(component['getDisplayName']('universal')).toBe('Universal Toys');
+    expect(component['getDisplayName']('unknownType')).toBe('unknownType');
+  });
 });

@@ -12,6 +12,7 @@
     <ion-select-option value="stuffedToy">Плюшева іграшка</ion-select-option>
     <ion-select-option value="creativeKit">Набір для творчості</ion-select-option>
     <ion-select-option value="universal">Універсальна іграшка</ion-select-option>
+    <ion-select-option value="new">Нова категорія</ion-select-option>
   </ion-select>
 </ion-item>
 
@@ -28,6 +29,9 @@
     </div>
     <div *ngIf="selectedType === 'universal'">
       <app-universal-form [formGroup]="productForm"></app-universal-form>
+    </div>
+    <div *ngIf="selectedType === 'new'">
+      <app-other-toys-form [formGroup]="productForm"></app-other-toys-form>
     </div>
   </ng-container>
 

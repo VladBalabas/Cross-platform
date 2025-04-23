@@ -1,10 +1,9 @@
 <div class="filter-container">
   <ion-list class="horizontal-checkboxes">
-    <ion-item *ngFor="let category of categories">
+    <ion-item *ngFor="let category of categoryState">
       <ion-checkbox
         [(ngModel)]="category.selected"
         (ionChange)="onCategoryChange()"
-        [checked]="category.selected"
       ></ion-checkbox>
       <ion-label>{{ category.name }}</ion-label>
     </ion-item>

@@ -14,41 +14,48 @@ import { FormsModule } from '@angular/forms';
 })
 export class ShowProductsComponent implements OnInit {
   @Input() products: Toy[] = [];
-  
-  categories = [
-    { name: 'Board Games', type: 'boardGame', selected: false },
-    { name: 'Stuffed Toys', type: 'stuffedToy', selected: false },
-    { name: 'Creative Kits', type: 'creativeKit', selected: false },
-    { name: 'Universal Toys', type: 'universal', selected: false },
-  ];
+  @Input() categories: { name: string; type: string }[] = [];
+  categoryState: { name: string; type: string; selected: boolean }[] = [];
 
   minPrice = 0;
   maxPrice = 1000;
   priceRange = { lower: 0, upper: 1000 };
 
   selectedCategories$ = new BehaviorSubject<string[]>([]);
-  priceFilter$ = new BehaviorSubject<{min: number, max: number}>({ min: 0, max: 1000 });
+  priceFilter$ = new BehaviorSubject<{ min: number; max: number }>({
+    min: 0,
+    max: 1000,
+  });
 
   filteredProducts: Toy[] = [];
 
   constructor() {}
 
   ngOnInit() {
+    this.categoryState = this.categories.map((c) => ({
+      ...c,
+      selected: false,
+    }));
     if (this.products.length > 0) {
-      this.minPrice = Math.min(...this.products.map(product => this.getProductPrice(product)));
-      this.maxPrice = Math.max(...this.products.map(product => this.getProductPrice(product)));
+      this.minPrice = Math.min(
+        ...this.products.map((product) => this.getProductPrice(product))
+      );
+      this.maxPrice = Math.max(
+        ...this.products.map((product) => this.getProductPrice(product))
+      );
       this.priceRange = { lower: this.minPrice, upper: this.maxPrice };
       this.priceFilter$.next({ min: this.minPrice, max: this.maxPrice });
     }
 
     combineLatest([this.selectedCategories$, this.priceFilter$]).subscribe(
       ([selectedCategories, priceFilter]) => {
-        this.filteredProducts = this.products.filter(product => {
-          const matchesCategory = selectedCategories.length === 0 || 
-                                selectedCategories.includes((product as any).type);
+        this.filteredProducts = this.products.filter((product) => {
+          const matchesCategory =
+            selectedCategories.length === 0 ||
+            selectedCategories.includes((product as any).type);
           const price = this.getProductPrice(product);
-          const matchesPrice = price >= priceFilter.min && price <= priceFilter.max;
-          
+          const matchesPrice =
+            price >= priceFilter.min && price <= priceFilter.max;
           return matchesCategory && matchesPrice;
         });
       }
@@ -56,9 +63,9 @@ export class ShowProductsComponent implements OnInit {
   }
 
   onCategoryChange() {
-    const selectedCategories = this.categories
-      .filter(category => category.selected)
-      .map(category => category.type);
+    const selectedCategories = this.categoryState
+      .filter((category) => category.selected)
+      .map((category) => category.type);
 
     this.selectedCategories$.next(selectedCategories);
   }
@@ -66,7 +73,7 @@ export class ShowProductsComponent implements OnInit {
   onPriceChange(event: any) {
     this.priceFilter$.next({
       min: event.detail.value.lower,
-      max: event.detail.value.upper
+      max: event.detail.value.upper,
     });
   }
   private getProductPrice(product: Toy): number {

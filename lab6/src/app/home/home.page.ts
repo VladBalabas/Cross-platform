@@ -26,13 +26,33 @@ import { CreateProductsComponent } from "../create-products/create-products.comp
 })
 export class HomePage implements OnInit {
   selectedSegment: string = 'show';
-
   products: Toy[] = [];
+  categories: string[] = [];
+  formattedCategories: { name: string, type: string }[] = [];
+  isLoading: boolean = true;
 
   constructor(private productsService: ProductsService) {}
 
   async ngOnInit() {
     await this.productsService.fetchProducts();
     this.products = this.productsService.products;
+    this.categories = this.productsService.categories;
+
+    this.formattedCategories = this.categories.map(type => ({
+      type,
+      name: this.getDisplayName(type)
+    }));
+
+    this.isLoading = false;
+  }
+
+  private getDisplayName(type: string): string {
+    switch (type) {
+      case 'boardGame': return 'Board Games';
+      case 'stuffedToy': return 'Stuffed Toys';
+      case 'creativeKit': return 'Creative Kits';
+      case 'universal': return 'Universal Toys';
+      default: return type;
+    }
   }
 }

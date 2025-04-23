@@ -1,21 +1,28 @@
 <ion-content class="ion-padding">
-  <ion-segment [(ngModel)]="selectedSegment" color="tertiary">
-    <ion-segment-button value="show">
-      <ion-label>Переглянути</ion-label>
-    </ion-segment-button>
-    <ion-segment-button value="create">
-      <ion-label>Додати</ion-label>
-    </ion-segment-button>
-    <ion-segment-button value="edit">
-      <ion-label>Редагувати</ion-label>
-    </ion-segment-button>
-  </ion-segment>
+  <ng-container *ngIf="!isLoading; else loading">
+    <ion-segment [(ngModel)]="selectedSegment" color="tertiary">
+      <ion-segment-button value="show">
+        <ion-label>Переглянути</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="create">
+        <ion-label>Додати</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="edit">
+        <ion-label>Редагувати</ion-label>
+      </ion-segment-button>
+    </ion-segment>
 
-  <div class="segment-content">
-    <ng-container [ngSwitch]="selectedSegment">
-      <app-show-products *ngSwitchCase="'show'" [products]="products"></app-show-products>
-      <app-create-products *ngSwitchCase="'create'" [products]="products"></app-create-products>
-      <app-edit-products *ngSwitchCase="'edit'" [products]="products"></app-edit-products>
-    </ng-container>
-  </div>
+    <div class="segment-content">
+      <ng-container [ngSwitch]="selectedSegment">
+        <app-show-products *ngSwitchCase="'show'" [products]="products" [categories]="formattedCategories"></app-show-products>
+        <app-create-products *ngSwitchCase="'create'" [products]="products"></app-create-products>
+        <app-edit-products *ngSwitchCase="'edit'" [products]="products"></app-edit-products>
+      </ng-container>
+    </div>
+  </ng-container>
+
+  <ng-template #loading>
+    <ion-spinner name="crescent"></ion-spinner>
+    <p>Завантаження даних...</p>
+  </ng-template>
 </ion-content>

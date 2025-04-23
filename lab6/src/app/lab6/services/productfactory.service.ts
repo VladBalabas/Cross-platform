@@ -4,6 +4,7 @@ import { BoardGame } from '../toys/board_game';
 import { StuffedToy } from '../toys/stuffed_toy';
 import { CreativeKit } from '../toys/creative_kit';
 import { Universal } from '../toys/universal';
+import { OtherToys } from '../toys/other_toys';
 
 @Injectable({ providedIn: 'root' })
 export class ProductFactoryService {
@@ -24,7 +25,7 @@ export class ProductFactoryService {
         product = new Universal(data.id, data.name, data.price, data.description, data.ageRange, data.features);
           break;
         default:
-        throw new Error('Unknown product type');
+            product = new OtherToys(data.type, data.id, data.name, data.price, data.description,);
     }
 
     (product as any).type = data.type;

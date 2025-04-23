@@ -33,4 +33,6 @@ export abstract class Toy implements IProduct {
     }
 
     abstract getInfo(): string;
+
+    abstract getType(): string;
 }

@@ -35,6 +35,16 @@ export class ReactiveFormsService {
     };
   }
 
+  createOtherToysForm(): FormGroup {
+    return this.fb.group({
+      ...this.createCommonForm(),
+      type: ['', [
+        Validators.required,
+        Validators.pattern(/^[a-zA-Z\s]+$/)
+      ]],
+    });
+  }
+
   createBoardGameForm(): FormGroup {
     return this.fb.group({
       ...this.createCommonForm(),
@@ -107,7 +117,7 @@ export class ReactiveFormsService {
       case 'universal':
         return this.createUniversalForm();
       default:
-        throw new Error('Unknown product type');
+        return this.createOtherToysForm();
     }
   }
 }

@@ -33,4 +33,8 @@ export class CreativeKit extends Toy {
     setDifficultyLevel(level: string): void {
         this.difficultyLevel = level;
     }
+
+    getType(): string {
+        return 'creativeKit';
+      }
 }

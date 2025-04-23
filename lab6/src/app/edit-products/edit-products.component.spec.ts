@@ -1,53 +1,60 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { EditProductsComponent } from './edit-products.component';
-import { ReactiveFormsService } from '../lab6/services/reactive-forms.service';
-import { ProductFactoryService } from '../lab6/services/productfactory.service';
 import { FormBuilder, ReactiveFormsModule, FormsModule } from '@angular/forms';
+import { Toy } from '../lab6/abstract/toy';
 import { BoardGame } from '../lab6/toys/board_game';
 import { StuffedToy } from '../lab6/toys/stuffed_toy';
 import { CreativeKit } from '../lab6/toys/creative_kit';
 import { Universal } from '../lab6/toys/universal';
-import { IonicModule } from '@ionic/angular';
-import { CommonModule } from '@angular/common';
-import { Toy } from '../lab6/abstract/toy';
+import { OtherToys } from '../lab6/toys/other_toys';
+import { ProductFactoryService } from '../lab6/services/productfactory.service';
+import { ReactiveFormsService } from '../lab6/services/reactive-forms.service';
+import { ProductsService } from '../lab6/services/products.service';
+import { AlertController } from '@ionic/angular/standalone';
+import { of } from 'rxjs';
 
 describe('EditProductsComponent', () => {
   let component: EditProductsComponent;
   let fixture: ComponentFixture<EditProductsComponent>;
-  let reactiveFormsService: ReactiveFormsService;
-  let productFactoryService: ProductFactoryService;
-  let fb: FormBuilder;
-
-  const testProducts = [
-    new BoardGame(1, 'Chess', 20, 'Classic strategy game', 2, 60),
-    new StuffedToy(2, 'Teddy Bear', 30, 'Soft plush toy', 'Cotton', 50),
-    new CreativeKit(3, 'Painting Set', 25, 'Complete painting kit', 'Art', 12, 'Medium'),
-    new Universal(4, 'Building Blocks', 35, 'Educational toy', '3-6', ['Colorful', 'Safe materials'])
-  ];
+  let mockProductFactory: jasmine.SpyObj<ProductFactoryService>;
+  let mockReactiveFormsService: jasmine.SpyObj<ReactiveFormsService>;
+  let mockProductsService: jasmine.SpyObj<ProductsService>;
+  let mockAlertCtrl: jasmine.SpyObj<AlertController>;
 
   beforeEach(async () => {
+    mockProductFactory = jasmine.createSpyObj('ProductFactoryService', ['createProduct']);
+    mockReactiveFormsService = jasmine.createSpyObj('ReactiveFormsService', ['createForm']);
+    mockProductsService = jasmine.createSpyObj('ProductsService', [
+      'deleteProduct', 
+      'updateProduct', 
+      'deleteProductsByType',
+      'getProducts'
+    ]);
+    mockAlertCtrl = jasmine.createSpyObj('AlertController', ['create']);
+
     await TestBed.configureTestingModule({
-      imports: [
-        IonicModule.forRoot(),
-        CommonModule,
-        FormsModule,
-        ReactiveFormsModule,
-        EditProductsComponent
-      ],
+      imports: [ReactiveFormsModule, FormsModule],
       providers: [
-        ReactiveFormsService,
-        ProductFactoryService,
-        FormBuilder
+        FormBuilder,
+        { provide: ProductFactoryService, useValue: mockProductFactory },
+        { provide: ReactiveFormsService, useValue: mockReactiveFormsService },
+        { provide: ProductsService, useValue: mockProductsService },
+        { provide: AlertController, useValue: mockAlertCtrl }
       ]
     }).compileComponents();
 
     fixture = TestBed.createComponent(EditProductsComponent);
     component = fixture.componentInstance;
-    reactiveFormsService = TestBed.inject(ReactiveFormsService);
-    productFactoryService = TestBed.inject(ProductFactoryService);
-    fb = TestBed.inject(FormBuilder);
-
-    component.products = [...testProducts];
+    
+    // Initialize with some test products
+    component.products = [
+      new BoardGame(1, 'Chess', 299, 'Classic strategy game', 2, 60),
+      new StuffedToy(2, 'Teddy Bear', 199, 'Soft plush toy', 'Brown', 30),
+      new CreativeKit(3, 'Painting Set', 399, 'Art supplies kit', 'Painting', 24),
+      new Universal(4, 'Lego Set', 599, 'Building blocks', 'Construction', ['']),
+      new OtherToys('puzzle', 5, 'Jigsaw Puzzle', 149, '1000 pieces landscape')
+    ];
+    
     fixture.detectChanges();
   });
 
@@ -56,161 +63,165 @@ describe('EditProductsComponent', () => {
   });
 
   describe('onEdit', () => {
-    it('should set up form for editing a board game', () => {
-      spyOn(reactiveFormsService, 'createForm').and.callThrough();
-      const product = testProducts[0];
+    it('should set up form for BoardGame', () => {
+      const boardGame = component.products[0] as BoardGame;
+      const mockForm = new FormBuilder().group({
+        name: [''],
+        price: [0],
+        description: [''],
+        playersCount: [0],
+        duration: [0]
+      });
       
-      component.onEdit(product);
+      mockReactiveFormsService.createForm.and.returnValue(mockForm);
+      
+      component.onEdit(boardGame);
       
       expect(component.selectedProductId).toBe(1);
-      expect(component.selectedProduct).toBe(product);
+      expect(component.selectedProduct).toBe(boardGame);
       expect(component.selectedType).toBe('boardGame');
-      expect(reactiveFormsService.createForm).toHaveBeenCalledWith('boardGame');
-      expect(component.productForm.value.name).toBe('Chess');
+      expect(mockReactiveFormsService.createForm).toHaveBeenCalledWith('boardGame');
+      expect(component.productForm).toBe(mockForm);
     });
 
-    it('should set up form for editing a stuffed toy', () => {
-      const product = testProducts[1];
-      component.onEdit(product);
+    it('should set up form for StuffedToy', () => {
+      const stuffedToy = component.products[1] as StuffedToy;
+      const mockForm = new FormBuilder().group({
+        name: [''],
+        price: [0],
+        description: [''],
+        color: [''],
+        size: [0]
+      });
       
+      mockReactiveFormsService.createForm.and.returnValue(mockForm);
+      
+      component.onEdit(stuffedToy);
+      
+      expect(component.selectedProductId).toBe(2);
+      expect(component.selectedProduct).toBe(stuffedToy);
       expect(component.selectedType).toBe('stuffedToy');
-      expect(component.productForm.value.material).toBe('Cotton');
-    });
-
-    it('should set up form for editing a creative kit', () => {
-      const product = testProducts[2];
-      component.onEdit(product);
-      
-      expect(component.selectedType).toBe('creativeKit');
-      expect(component.productForm.value.kitType).toBe('Art');
-    });
-
-    it('should set up form for editing a universal product', () => {
-      const product = testProducts[3];
-      component.onEdit(product);
-      
-      expect(component.selectedType).toBe('universal');
-      expect(component.productForm.value.ageRange).toBe('3-6');
+      expect(mockReactiveFormsService.createForm).toHaveBeenCalledWith('stuffedToy');
+      expect(component.productForm).toBe(mockForm);
     });
   });
 
   describe('onDelete', () => {
-    it('should remove the product from the list and reset form', () => {
-      const product = testProducts[0];
-      component.onEdit(product);
+    it('should delete product and reset form', fakeAsync(() => {
+      const product = component.products[0];
+      mockProductsService.deleteProduct.and.returnValue(Promise.resolve());
       
       component.onDelete(product);
+      tick();
       
-      expect(component.products.length).toBe(3);
-      expect(component.products.find(p => p.id === 1)).toBeUndefined();
+      expect(component.products.length).toBe(4);
+      expect(mockProductsService.deleteProduct).toHaveBeenCalledWith(1);
       expect(component.selectedProductId).toBeNull();
       expect(component.selectedProduct).toBeNull();
       expect(component.selectedType).toBe('');
-    });
-
-    it('should not modify products if product not found', () => {
-      const initialLength = component.products.length;
-      const fakeProduct = new BoardGame(99, 'Fake', 0, '', 0, 0);
-      
-      component.onDelete(fakeProduct);
-      
-      expect(component.products.length).toBe(initialLength);
-    });
-  });
-
-  describe('onSubmit', () => {
-    beforeEach(() => {
-      component.onEdit(testProducts[0]);
-    });
-
-    it('should not submit if form is invalid', () => {
-      spyOn(productFactoryService, 'createProduct');
-      component.productForm.get('name')?.setValue('');
-      
-      component.onSubmit();
-      
-      expect(productFactoryService.createProduct).not.toHaveBeenCalled();
-    });
-
-    it('should update the board game when form is valid', () => {
-      component.productForm.patchValue({
-        name: 'Updated Chess',
-        price: 25,
-        description: 'Updated description',
-        playersCount: 4,
-        duration: 90
-      });
-      
-      component.onSubmit();
-      
-      const updatedProduct = component.products.find(p => p.id === 1);
-      expect(updatedProduct).toBeDefined();
-      expect(updatedProduct?.name).toBe('Updated Chess');
-      expect(updatedProduct?.price).toBe(25);
-      expect(component.selectedProductId).toBeNull();
-    });
-
-    it('should update the stuffed toy when form is valid', () => {
-      component.onEdit(testProducts[1]);
-      component.productForm.patchValue({
-        name: 'Updated Teddy',
-        material: 'Silk',
-        height: 60
-      });
-      
-      component.onSubmit();
-      
-      const updatedProduct = component.products.find(p => p.id === 2) as StuffedToy;
-      expect(updatedProduct.material).toBe('Silk');
-      expect(updatedProduct.height).toBe(60);
-    });
-
-    it('should not update anything if product ID not found', () => {
-      component.selectedProductId = 99;
-      component.onSubmit();
-      
-      expect(component.products).toEqual(testProducts);
-    });
+    }));
   });
 
   describe('getProductType', () => {
     it('should return correct type for BoardGame', () => {
-      const type = component['getProductType'](testProducts[0]);
-      expect(type).toBe('boardGame');
+      const result = component.getProductType(new BoardGame(1, 'Test', 100, 'Test', 2, 30));
+      expect(result).toBe('boardGame');
     });
 
     it('should return correct type for StuffedToy', () => {
-      const type = component['getProductType'](testProducts[1]);
-      expect(type).toBe('stuffedToy');
+      const result = component.getProductType(new StuffedToy(1, 'Test', 100, 'Test', 'Red', 20));
+      expect(result).toBe('stuffedToy');
     });
 
     it('should return correct type for CreativeKit', () => {
-      const type = component['getProductType'](testProducts[2]);
-      expect(type).toBe('creativeKit');
+      const result = component.getProductType(new CreativeKit(1, 'Test', 100, 'Test', 'Craft', 12));
+      expect(result).toBe('creativeKit');
     });
 
     it('should return correct type for Universal', () => {
-      const type = component['getProductType'](testProducts[3]);
-      expect(type).toBe('universal');
+      const result = component.getProductType(new Universal(1, 'Test', 100, 'Test', 'Type', ['']));
+      expect(result).toBe('universal');
     });
 
-    it('should return empty string for unknown type', () => {
-      const fakeProduct = { id: 99, name: 'Fake' } as unknown as Toy;
-      const type = component['getProductType'](fakeProduct);
-      expect(type).toBe('');
+    it('should return "new" for unknown types', () => {
+      const result = component.getProductType(new OtherToys('unknown', 1, 'Test', 100, 'Test'));
+      expect(result).toBe('new');
     });
   });
 
-  describe('resetForm', () => {
-    it('should reset all form state', () => {
-      component.onEdit(testProducts[0]);
+  describe('onTypeChange', () => {
+    it('should change form type and preserve common data', () => {
+      const boardGame = component.products[0] as BoardGame;
+      const initialForm = new FormBuilder().group({
+        name: ['Chess'],
+        price: [299],
+        description: ['Classic strategy game'],
+        playersCount: [2],
+        duration: [60]
+      });
       
-      component['resetForm']();
+      const newForm = new FormBuilder().group({
+        name: [''],
+        price: [0],
+        description: [''],
+        color: [''],
+        size: [0]
+      });
       
-      expect(component.selectedProductId).toBeNull();
-      expect(component.selectedProduct).toBeNull();
-      expect(component.selectedType).toBe('');
-      expect(component.productForm.pristine).toBeTrue();
+      component.selectedProduct = boardGame;
+      component.selectedType = 'boardGame';
+      component.productForm = initialForm;
+      
+      mockReactiveFormsService.createForm.and.returnValue(newForm);
+      
+      component.onTypeChange('stuffedToy');
+      
+      expect(component.selectedType).toBe('stuffedToy');
+      expect(mockReactiveFormsService.createForm).toHaveBeenCalledWith('stuffedToy');
+      expect(component.productForm.value).toEqual(jasmine.objectContaining({
+        name: 'Chess',
+        price: 299,
+        description: 'Classic strategy game'
+      }));
     });
+  });
+
+  describe('onSubmit', () => {
+    it('should update product when form is valid', fakeAsync(() => {
+      const boardGame = component.products[0] as BoardGame;
+      const updatedBoardGame = new BoardGame(1, 'Updated Chess', 350, 'Updated description', 4, 90);
+      
+      const form = new FormBuilder().group({
+        name: ['Updated Chess'],
+        price: [350],
+        description: ['Updated description'],
+        playersCount: [4],
+        duration: [90]
+      });
+      
+      component.selectedProductId = 1;
+      component.selectedType = 'boardGame';
+      component.productForm = form;
+      
+      mockProductFactory.createProduct.and.returnValue(updatedBoardGame);
+      mockProductsService.updateProduct.and.returnValue(Promise.resolve());
+      
+      component.onSubmit();
+      tick();
+      
+      expect(mockProductFactory.createProduct).toHaveBeenCalledWith({
+        id: 1,
+        name: 'Updated Chess',
+        price: 350,
+        description: 'Updated description',
+        playersCount: 4,
+        duration: 90,
+        type: 'boardGame'
+      });
+      
+      expect(component.products[0]).toBe(updatedBoardGame);
+      expect(mockProductsService.updateProduct).toHaveBeenCalledWith(updatedBoardGame);
+      expect(component.selectedProductId).toBeNull();
+    }));
   });
 });

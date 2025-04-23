@@ -18,6 +18,9 @@ import { CreativeKit } from '../lab6/toys/creative_kit';
 import { Universal } from '../lab6/toys/universal';
 import { IonicModule } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
+import { OtherToysFormComponent } from '../forms/other-toys-form/other-toys-form.component';
+import { ProductsService } from '../lab6/services/products.service';
+import { AlertController } from '@ionic/angular/standalone';
 
 @Component({
   selector: 'app-edit-products',
@@ -32,6 +35,8 @@ import { CommonModule } from '@angular/common';
     StuffedToyFormComponent,
     CreativeKitFormComponent,
     UniversalFormComponent,
+    OtherToysFormComponent,
+    
   ],
   standalone: true,
 })
@@ -45,7 +50,9 @@ export class EditProductsComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private productFactory: ProductFactoryService,
-    private reactiveFormsService: ReactiveFormsService
+    private reactiveFormsService: ReactiveFormsService,
+    private productsService: ProductsService,
+    private alertCtrl: AlertController
   ) {
     this.productForm = this.fb.group({});
   }
@@ -61,20 +68,22 @@ export class EditProductsComponent implements OnInit {
     this.patchFormValues();
   }
 
-  onDelete(product: Toy) {
+  async onDelete(product: Toy) {
     const index = this.products.findIndex((p) => p.id === product.id);
     if (index !== -1) {
       this.products.splice(index, 1);
+  
+      await this.productsService.deleteProduct(product.id);
     }
     this.resetForm();
   }
 
-  private getProductType(product: Toy): string {
+  public getProductType(product: Toy): string {
     if (product instanceof BoardGame) return 'boardGame';
     if (product instanceof StuffedToy) return 'stuffedToy';
     if (product instanceof CreativeKit) return 'creativeKit';
     if (product instanceof Universal) return 'universal';
-    return '';
+    return 'new';
   }
 
   private patchFormValues() {
@@ -84,31 +93,77 @@ export class EditProductsComponent implements OnInit {
     }
   }
 
-  onSubmit() {
+  onTypeChange(newType: string) {
+    if (newType !== this.selectedType && this.selectedProduct) {
+      const commonData = {
+        id: this.selectedProduct.id,
+        name: this.productForm.value.name,
+        price: this.productForm.value.price,
+        description: this.productForm.value.description,
+      };
+
+      this.selectedType = newType;
+      this.productForm = this.reactiveFormsService.createForm(newType);
+      this.productForm.patchValue(commonData);
+    }
+  }
+
+  async onSubmit() {
     if (this.productForm.valid && this.selectedProductId) {
       const updatedData = {
         ...this.productForm.value,
         id: this.selectedProductId,
-        type: this.selectedType,
+        ...(this.selectedType !== 'new' && { type: this.selectedType }),
       };
-
+  
       const updatedProduct = this.productFactory.createProduct(updatedData);
-
+  
       const index = this.products.findIndex(
         (p) => p.id === this.selectedProductId
       );
       if (index !== -1) {
         this.products[index] = updatedProduct;
       }
-
+  
+      await this.productsService.updateProduct(updatedProduct);
+  
       this.resetForm();
     }
   }
 
-  private resetForm() {
+  public resetForm() {
     this.selectedProductId = null;
     this.selectedProduct = null;
     this.selectedType = '';
     this.productForm.reset();
+  }
+
+  async presentDeleteTypeModal() {
+    const alert = await this.alertCtrl.create({
+      header: 'Видалення типу продуктів',
+      inputs: this.productsService.categories.map((type) => ({
+        name: type,
+        type: 'radio',
+        label: type,
+        value: type
+      })),
+      buttons: [
+        {
+          text: 'Скасувати',
+          role: 'cancel'
+        },
+        {
+          text: 'Видалити',
+          handler: async (selectedType: string) => {
+            if (selectedType) {
+              await this.productsService.deleteProductsByType(selectedType);
+              this.products = this.products.filter(p => p.getType() !== selectedType);
+            }
+          }
+        }
+      ]
+    });
+
+    await alert.present();
   }
 }

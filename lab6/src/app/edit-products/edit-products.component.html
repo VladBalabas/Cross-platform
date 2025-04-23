@@ -1,18 +1,18 @@
 <ion-header>
   <ion-toolbar>
     <ion-title>Продукти</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="presentDeleteTypeModal()">🗑️ Видалити тип</ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
-
 
 <ion-card *ngFor="let product of products">
   <ion-card-header>
     <ion-card-title>{{ product.name }}</ion-card-title>
-    
   </ion-card-header>
 
   <ion-card-content>
-
     <ion-row class="ion-justify-content-between ion-align-items-center">
       <ion-card-subtitle>{{ product.getInfo() }}</ion-card-subtitle>
       <ion-col size="auto" class="ion-text-right">
@@ -27,6 +27,17 @@
 
     <form *ngIf="selectedProductId === product.id" [formGroup]="productForm" (ngSubmit)="onSubmit()">
       <ng-container *ngIf="selectedType">
+        <ion-item>
+          <ion-label position="floating">Тип продукту</ion-label>
+          <ion-select [(ngModel)]="selectedType" name="type" (ionChange)="onTypeChange($event.detail.value)">
+            <ion-select-option value="boardGame">Настільна гра</ion-select-option>
+            <ion-select-option value="stuffedToy">М'яка іграшка</ion-select-option>
+            <ion-select-option value="creativeKit">Набір для творчості</ion-select-option>
+            <ion-select-option value="universal">Універсальний</ion-select-option>
+            <ion-select-option value="new">Інше</ion-select-option>
+          </ion-select>
+        </ion-item>
+
         <div *ngIf="selectedType === 'boardGame'">
           <app-board-game-form [formGroup]="productForm"></app-board-game-form>
         </div>
@@ -38,6 +49,9 @@
         </div>
         <div *ngIf="selectedType === 'universal'">
           <app-universal-form [formGroup]="productForm"></app-universal-form>
+        </div>
+        <div *ngIf="selectedType === 'new'">
+          <app-other-toys-form [formGroup]="productForm"></app-other-toys-form>
         </div>
       </ng-container>
 

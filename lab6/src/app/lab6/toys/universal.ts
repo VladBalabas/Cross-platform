@@ -23,4 +23,8 @@ export class Universal extends Toy {
   getFeatures(): string[] {
     return this.features;
   }
+
+  getType(): string {
+    return 'universal';
+  }
 }

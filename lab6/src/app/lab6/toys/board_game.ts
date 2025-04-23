@@ -23,4 +23,8 @@ export class BoardGame extends Toy {
     getDuration(): number {
         return this.duration;
     }
+
+    getType(): string {
+        return 'boardGame';
+      }
 }

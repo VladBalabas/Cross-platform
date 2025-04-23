@@ -72,16 +72,4 @@ describe('ProductFactoryService', () => {
     expect(product.price).toBe(15);
     expect(product.description).toBe('A kit for young artists');
   });
-
-  it('should throw error for unknown product type', () => {
-    const unknownProductData = {
-      type: 'unknown',
-      id: 4,
-      name: 'Unknown Toy',
-      price: 25,
-      description: 'An unknown toy'
-    };
-
-    expect(() => service.createProduct(unknownProductData)).toThrowError('Unknown product type');
-  });
 });

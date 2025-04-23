@@ -23,4 +23,8 @@ export class StuffedToy extends Toy {
     getHeight(): number {
         return this.height;
     }
+
+    getType(): string {
+        return 'stuffedToy';
+      }
 }
