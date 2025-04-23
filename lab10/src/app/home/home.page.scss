@@ -1,0 +1,57 @@
+ion-header {
+  background-color: #6200ea; /* Тёмно-фиолетовый цвет */
+}
+
+ion-toolbar {
+  --background: #6200ea; /* Тёмно-фиолетовый для тулбара */
+}
+
+ion-title {
+  color: #ffffff; /* Белый цвет текста */
+  font-size: 1.5rem; /* Увеличенный размер шрифта */
+  font-weight: bold;
+}
+
+ion-content {
+  background-color: #f9f9f9; /* Светлый фон контента */
+  padding: 20px; /* Отступы для контента */
+}
+
+ion-spinner {
+  display: block;
+  margin: 0 auto; /* Центрируем спиннер */
+}
+
+ion-select {
+  margin-bottom: 20px; /* Отступ снизу */
+  --placeholder-color: #9e7a7a; /* Цвет плейсхолдера */
+}
+
+ion-select-option {
+  padding: 10px;
+  font-size: 1rem;
+}
+
+ion-list {
+  margin-top: 20px; /* Отступ сверху для списка товаров */
+}
+
+ion-item {
+  margin-bottom: 15px; /* Отступ снизу */
+  border-radius: 8px; /* Скругленные углы */
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1); /* Лёгкая тень */
+  padding: 15px;
+}
+
+ion-label h2 {
+  font-size: 1.2rem; /* Увеличенный размер шрифта для заголовка */
+  color: #c6adad; /* Темный текст */
+  font-weight: 600; /* Полужирный шрифт */
+  margin-bottom: 5px; /* Отступ снизу */
+}
+
+ion-label p {
+  color: #666666; /* Светло-серый для описания */
+  font-size: 1rem;
+  margin-top: 5px;
+}

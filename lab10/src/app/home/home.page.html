@@ -1,0 +1,23 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Перегляд товарів</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-spinner *ngIf="isLoading"></ion-spinner>
+
+  <ion-select [(ngModel)]="selectedCategory" (ionChange)="filterProductsByCategory($event.detail.value)" style="padding-left: 30px;">
+    <ion-select-option value="">Усі категорії</ion-select-option>
+    <ion-select-option *ngFor="let category of categories" [value]="category">{{ category }}</ion-select-option>
+  </ion-select>
+
+  <ion-list>
+    <ion-item *ngFor="let product of filteredProducts">
+      <ion-label>
+        <h2>{{ product | uppercaseAndPrice }}</h2>
+        <p>{{ product.getDescription() }}</p>
+      </ion-label>
+    </ion-item>
+  </ion-list>
+</ion-content>
