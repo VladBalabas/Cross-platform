@@ -5,7 +5,7 @@ import { child, get, ref, remove, set } from 'firebase/database';
 import { Database } from '@angular/fire/database';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ProductsService {
   products: Toy[] = [];
@@ -20,25 +20,21 @@ export class ProductsService {
     try {
       const dbRef = ref(this.db);
       const snapshot = await get(child(dbRef, 'products'));
-      
-      if (snapshot.exists()) {
-        const productsData = snapshot.val();
-        this.products = [];
-        const typesSet = new Set<string>();
-        
-        Object.keys(productsData).forEach(key => {
-          const productData = productsData[key];
-          if (productData?.type) {
-            typesSet.add(productData.type);
-          }
-          const product = this.productFactory.createProduct(productData);
-          this.products.push(product);
-        });
-        
-        this.categories = Array.from(typesSet);
-      } else {
-        console.warn('Продукти не знайдено');
-      }
+
+      const productsData = snapshot.val();
+      this.products = [];
+      const typesSet = new Set<string>();
+
+      Object.keys(productsData).forEach((key) => {
+        const productData = productsData[key];
+        if (productData?.type) {
+          typesSet.add(productData.type);
+        }
+        const product = this.productFactory.createProduct(productData);
+        this.products.push(product);
+      });
+
+      this.categories = Array.from(typesSet);
     } catch (error) {
       console.error('Помилка завантаження продуктів з Firebase:', error);
     }

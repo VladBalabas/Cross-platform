@@ -27,13 +27,13 @@ export class HomePage {
     this.categories = this.productsService.categories;
 
     this.isLoading = false;
-    this.filteredProducts = [...this.products]; // Отображаем все товары изначально
+    this.filteredProducts = [...this.products];
   }
 
   filterProductsByCategory(category: string) {
     this.selectedCategory = category;
     if (category === '') {
-      this.filteredProducts = [...this.products]; // Если категория не выбрана, показываем все товары
+      this.filteredProducts = [...this.products];
     } else {
       this.filteredProducts = this.products.filter(product => product.getType() === category);
     }
